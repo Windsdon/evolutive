@@ -42,6 +42,7 @@ void Robot::scanNextBehaviour() {
 			activeBehaviour->reset();
 
 			cout << "Ativando comportamento " << activeBehaviour << endl;
+			break;
 		}
 	}
 }

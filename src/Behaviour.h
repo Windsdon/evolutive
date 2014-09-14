@@ -57,7 +57,6 @@ class Behaviour {
 			return robot;
 		}
 
-	private:
 		vector<Action*> actions;
 		int currentAction;
 		Robot *robot;
