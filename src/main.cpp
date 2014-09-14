@@ -27,45 +27,31 @@ int main(int argc, char **argv) {
 
 	srand(time(0));
 
-	/*
-	 BehaviourOnObstacleDistance bClose(&r, 180, 0, 1.5);
+	// criar comportamentos
+	int rb = rand()%5 + 2;
+	for(int i = 0; i < rb; i++){
+		double minDist = (rand() % 100)/100.0;
+		Behaviour *b = new BehaviourOnObstacleDistance(&r, rand()%360, minDist, minDist + (rand() % 400)/100.0);
 
-	 for (int i = 0; i < 10; i++) {
-	 bClose.addAction(
-	 new Action(rand() % 2 ? ACTION_LINEAR_VEL : ACTION_ANGLUAR_VEL,
-	 -1 + (rand() % 200) / 100.0, rand() % 2));
-	 }
+		int ra = rand() % 10 + 1;
+		for(int i = 0; i < ra; i++){
+			Action *act;
+			if(rand()%2){
+				act = new Action(ACTION_LINEAR_VEL, (rand()%200)/100.0 - 1, (rand()%100)/100.0);
+			}else{
+				act = new Action(ACTION_ANGLUAR_VEL, (rand()%200)/100.0 - 1, (rand()%100)/100.0);
+			}
+			b->addAction(act);
+		}
 
-	 BehaviourOnObstacleDistance bFar(&r, 180, 1.5, 100);
+		descriptor.addBehavior(b);
+	}
 
-	 for (int i = 0; i < 10; i++) {
-	 bFar.addAction(
-	 new Action(rand() % 2 ? ACTION_LINEAR_VEL : ACTION_ANGLUAR_VEL,
-	 -1 + (rand() % 200) / 100.0, rand() % 2));
-	 }
+	BehaviourOnObstacleDistance far(&r, 180, 0, 100);
+	far.addAction(new Action(ACTION_LINEAR_VEL, 1, 0.1));
 
-	 */
-
-	BehaviourOnObstacleDistance bClose(&r, 180, 0, 1);
-	BehaviourOnObstacleDistance bCloseL(&r, 270, 0, 0.7);
-	BehaviourOnObstacleDistance bCloseR(&r, 90, 0, 0.7);
-	BehaviourOnObstacleDistance bCloseL2(&r, 360, 0, 0.3);
-	BehaviourOnObstacleDistance bCloseR2(&r, 0, 0, 0.3);
-	BehaviourOnObstacleDistance bFar(&r, 180, 1, 100);
-
-	bClose.addAction(new Action(ACTION_ANGLUAR_VEL, 0.5, 0.1));
-	bCloseL.addAction(new Action(ACTION_ANGLUAR_VEL, -0.5, 0.2));
-	bCloseR.addAction(new Action(ACTION_ANGLUAR_VEL, 0.5, 0.2));
-	bCloseL2.addAction(new Action(ACTION_ANGLUAR_VEL, -0.5, 0.2));
-	bCloseR2.addAction(new Action(ACTION_ANGLUAR_VEL, 0.5, 0.2));
-	bFar.addAction(new Action(ACTION_LINEAR_VEL, 1, 0.1));
-
-	descriptor.addBehavior(&bClose);
-	descriptor.addBehavior(&bCloseL);
-	descriptor.addBehavior(&bCloseR);
-	descriptor.addBehavior(&bCloseL2);
-	descriptor.addBehavior(&bCloseR2);
-	descriptor.addBehavior(&bFar);
+	// senão tem uma grande chance dele ficar parado
+	descriptor.addBehavior(&far);
 
 	while (true) {
 		robot.Read();
