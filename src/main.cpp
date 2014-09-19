@@ -9,6 +9,7 @@
 #include <player-3.0/libplayerc++/playerc++.h>
 #include <iostream>
 #include <cstdlib>
+#include <exception>
 
 #define _GXX_EXPERIMENTAL_CXX0X__
 #include <chrono>
@@ -16,10 +17,36 @@
 using namespace PlayerCc;
 using namespace std;
 
+void printBehaviour(ostream& left, const Behaviour& b) {
+	left << "Behaviour " << &b << " ";
+	b.print(left);
+}
+
+void printDescriptor(ostream& left, const RobotDescriptor &rd) {
+	left << "Descriptor " << &rd << ". Enumerating behaviours:" << endl;
+	for (unsigned int i = 0; i < rd.behaviours.size(); i++) {
+		printBehaviour(left, *(rd.behaviours[i]));
+	}
+}
+
 int main(int argc, char **argv) {
-	PlayerClient robot("localhost", 6665);
-	Position2dProxy pp(&robot);
-	LaserProxy lp(&robot);
+	PlayerClient *robot = nullptr;
+
+	while(robot == nullptr){
+		try{
+			robot = new PlayerClient("localhost", 6665);
+		}catch(PlayerError &ex){
+			robot = nullptr;
+			sleep(1);
+		}
+	}
+
+	Position2dProxy pp(robot);
+	LaserProxy lp(robot);
+
+	double rtx = 6;
+	double rty = 6;
+	double timeLimit = 60;
 
 	RobotDescriptor descriptor;
 
@@ -28,18 +55,21 @@ int main(int argc, char **argv) {
 	srand(time(0));
 
 	// criar comportamentos
-	int rb = rand()%5 + 2;
-	for(int i = 0; i < rb; i++){
-		double minDist = (rand() % 100)/100.0;
-		Behaviour *b = new BehaviourOnObstacleDistance(&r, rand()%360, minDist, minDist + (rand() % 400)/100.0);
+	int rb = rand() % 5 + 2;
+	for (int i = 0; i < rb; i++) {
+		double minDist = (rand() % 100) / 100.0;
+		Behaviour *b = new BehaviourOnObstacleDistance(&r, rand() % 360,
+				minDist, minDist + (rand() % 400) / 100.0);
 
 		int ra = rand() % 10 + 1;
-		for(int i = 0; i < ra; i++){
+		for (int i = 0; i < ra; i++) {
 			Action *act;
-			if(rand()%2){
-				act = new Action(ACTION_LINEAR_VEL, (rand()%200)/100.0 - 1, (rand()%100)/100.0);
-			}else{
-				act = new Action(ACTION_ANGLUAR_VEL, (rand()%200)/100.0 - 1, (rand()%100)/100.0);
+			if (rand() % 2) {
+				act = new Action(ACTION_LINEAR_VEL, (rand() % 200) / 100.0 - 1,
+						(rand() % 100) / 100.0);
+			} else {
+				act = new Action(ACTION_ANGULAR_VEL, (rand() % 200) / 100.0 - 1,
+						(rand() % 100) / 100.0);
 			}
 			b->addAction(act);
 		}
@@ -53,9 +83,33 @@ int main(int argc, char **argv) {
 	// senão tem uma grande chance dele ficar parado
 	descriptor.addBehavior(&far);
 
+	printDescriptor(cout, descriptor);
+
+	auto begin = chrono::high_resolution_clock::now();
+
+	double points = -1;
+
 	while (true) {
-		robot.Read();
+		robot->Read();
 		r.update();
+
+		auto now = chrono::high_resolution_clock::now();
+		double elapsed = (chrono::duration_cast < chrono::duration<double>
+				> (now - begin)).count();
+
+		double dist = pow(pp.GetXPos() - rtx, 2) + pow(pp.GetYPos() - rty, 2);
+
+		if(points < 0 || dist < points) {
+			points = dist;
+		}
+
+		if (elapsed > timeLimit) {
+			break;
+		}
 	}
+
+	cout << "Acabou o tempo! Pontos: " << points << endl;
+
+	return 0;
 }
 

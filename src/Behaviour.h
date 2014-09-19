@@ -9,6 +9,7 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
 #include "Action.h"
 
 using namespace std;
@@ -57,6 +58,9 @@ class Behaviour {
 			return robot;
 		}
 
+		virtual void print(ostream&) const = 0;
+
+
 		vector<Action*> actions;
 		int currentAction;
 		Robot *robot;
@@ -72,6 +76,8 @@ class BehaviourOnObstacleDistance: public Behaviour {
 		}
 
 		virtual bool checkConditions();
+
+		virtual void print(ostream&) const;
 
 	private:
 		double angle, distanceMin, distanceMax;

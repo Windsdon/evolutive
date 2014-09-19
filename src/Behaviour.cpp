@@ -28,3 +28,12 @@ bool BehaviourOnObstacleDistance::checkConditions() {
 
 	return false;
 }
+
+void BehaviourOnObstacleDistance::print(ostream& os) const {
+	os << "[BehaviourOnObstacleDistance] (min = " << distanceMin << ", max = " << distanceMax << ", angle = " << angle << "). Actions: " << endl;
+	for(unsigned int i = 0; i < actions.size(); i++){
+		os << "* ";
+		actions[i]->print(os);
+		os << endl;
+	}
+}

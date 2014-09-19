@@ -55,7 +55,7 @@ void Robot::runAction() {
 			case ACTION_LINEAR_VEL:
 				pp->SetSpeed(activeAction->value, 0);
 				break;
-			case ACTION_ANGLUAR_VEL:
+			case ACTION_ANGULAR_VEL:
 				pp->SetSpeed(0, activeAction->value);
 				break;
 			default:
