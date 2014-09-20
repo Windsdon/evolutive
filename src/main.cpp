@@ -10,6 +10,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <exception>
+#include <sstream>
 
 #define _GXX_EXPERIMENTAL_CXX0X__
 #include <chrono>
@@ -52,6 +53,11 @@ int main(int argc, char **argv) {
 
 	Robot r(&pp, &lp, &descriptor);
 
+	/*ifstream inputFile;
+	inputFile.open("desc");
+	descriptor.loadFromFile(inputFile);
+	inputFile.close();*/
+
 	srand(time(0));
 
 	// criar comportamentos
@@ -65,7 +71,7 @@ int main(int argc, char **argv) {
 		for (int i = 0; i < ra; i++) {
 			Action *act;
 			if (rand() % 2) {
-				act = new Action(ACTION_LINEAR_VEL, (rand() % 200) / 100.0 - 1,
+				act = new Action(ACTION_LINEAR_VEL, (rand() % 100) / 100.0,
 						(rand() % 100) / 100.0);
 			} else {
 				act = new Action(ACTION_ANGULAR_VEL, (rand() % 200) / 100.0 - 1,
@@ -85,13 +91,29 @@ int main(int argc, char **argv) {
 
 	printDescriptor(cout, descriptor);
 
+
+	stringstream fileName;
+	fileName << "robots/desc" << time(NULL);
+
+	ofstream outputFile;
+	outputFile.open(fileName.str());
+	descriptor.saveToFile(outputFile);
+	outputFile.close();
+
+
 	auto begin = chrono::high_resolution_clock::now();
 
 	double points = -1;
+	bool stall = false;
 
 	while (true) {
 		robot->Read();
 		r.update();
+
+		if(pp.GetStall()){
+			stall = true;
+			break;
+		}
 
 		auto now = chrono::high_resolution_clock::now();
 		double elapsed = (chrono::duration_cast < chrono::duration<double>
@@ -109,6 +131,7 @@ int main(int argc, char **argv) {
 	}
 
 	cout << "Acabou o tempo! Pontos: " << points << endl;
+	cout << "Bateu: " << stall << endl;
 
 	return 0;
 }

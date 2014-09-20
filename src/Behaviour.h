@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include "Action.h"
 
 using namespace std;
@@ -60,6 +61,11 @@ class Behaviour {
 
 		virtual void print(ostream&) const = 0;
 
+		virtual int getID() const = 0;
+
+		virtual void saveToFile(ofstream &file) const = 0;
+
+		virtual void saveActionsToFile(ofstream &file) const;
 
 		vector<Action*> actions;
 		int currentAction;
@@ -78,6 +84,12 @@ class BehaviourOnObstacleDistance: public Behaviour {
 		virtual bool checkConditions();
 
 		virtual void print(ostream&) const;
+
+		virtual int getID() const {
+			return 0;
+		}
+
+		virtual void saveToFile(ofstream &file) const;
 
 	private:
 		double angle, distanceMin, distanceMax;

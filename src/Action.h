@@ -57,4 +57,6 @@ class Action {
 			os << ", value = " << value << ", duration = " << duration << ")";
 		}
 
+		void saveToFile(ofstream &file) const;
+
 };
