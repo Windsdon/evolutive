@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <exception>
 #include <sstream>
+#include <algorithm>
 
 #define _GXX_EXPERIMENTAL_CXX0X__
 #include <chrono>
@@ -33,10 +34,10 @@ void printDescriptor(ostream& left, const RobotDescriptor &rd) {
 int main(int argc, char **argv) {
 	PlayerClient *robot = nullptr;
 
-	while(robot == nullptr){
-		try{
+	while (robot == nullptr) {
+		try {
 			robot = new PlayerClient("localhost", 6665);
-		}catch(PlayerError &ex){
+		} catch (PlayerError &ex) {
 			robot = nullptr;
 			sleep(1);
 		}
@@ -54,9 +55,9 @@ int main(int argc, char **argv) {
 	Robot r(&pp, &lp, &descriptor);
 
 	/*ifstream inputFile;
-	inputFile.open("desc");
-	descriptor.loadFromFile(inputFile);
-	inputFile.close();*/
+	 inputFile.open("desc");
+	 descriptor.loadFromFile(inputFile);
+	 inputFile.close();*/
 
 	srand(time(0));
 
@@ -91,7 +92,6 @@ int main(int argc, char **argv) {
 
 	printDescriptor(cout, descriptor);
 
-
 	stringstream fileName;
 	fileName << "robots/desc" << time(NULL);
 
@@ -100,29 +100,34 @@ int main(int argc, char **argv) {
 	descriptor.saveToFile(outputFile);
 	outputFile.close();
 
-
 	auto begin = chrono::high_resolution_clock::now();
+	auto lastSample = chrono::high_resolution_clock::now();
 
-	double points = -1;
+	double points = 0;
 	bool stall = false;
+	vector<double> pl;
+	double sampleRate = 1;
 
 	while (true) {
 		robot->Read();
 		r.update();
 
-		if(pp.GetStall()){
+		if (pp.GetStall()) {
 			stall = true;
 			break;
 		}
 
 		auto now = chrono::high_resolution_clock::now();
-		double elapsed = (chrono::duration_cast < chrono::duration<double>
-				> (now - begin)).count();
+		double elapsed = (chrono::duration_cast<chrono::duration<double> >(
+				now - begin)).count();
 
-		double dist = pow(pp.GetXPos() - rtx, 2) + pow(pp.GetYPos() - rty, 2);
+		if ((chrono::duration_cast<chrono::duration<double> >(now - lastSample)).count()
+				>= sampleRate) {
+			lastSample = now;
+			double dist = pow(pp.GetXPos() - rtx, 2)
+					+ pow(pp.GetYPos() - rty, 2);
 
-		if(points < 0 || dist < points) {
-			points = dist;
+			pl.push_back(dist);
 		}
 
 		if (elapsed > timeLimit) {
@@ -130,8 +135,29 @@ int main(int argc, char **argv) {
 		}
 	}
 
+	sort(pl.begin(), pl.end());
+
+	int samples = 0;
+
+	for (unsigned int i = 0; (i < 10 && i < pl.size()); i++) {
+		points += pl[i];
+		samples++;
+	}
+
+	points /= samples;
+
+	double duration = (chrono::duration_cast<chrono::duration<double> >(
+			chrono::high_resolution_clock::now() - begin)).count();
+
 	cout << "Acabou o tempo! Pontos: " << points << endl;
 	cout << "Bateu: " << stall << endl;
+	cout << "Duration: " << duration << endl;
+
+	ofstream stats;
+	stats.open("stats.txt", ios::app);
+	stats << points << " " << (stall ? "true" : "false") << " " << duration
+			<< endl;
+	stats.close();
 
 	return 0;
 }
