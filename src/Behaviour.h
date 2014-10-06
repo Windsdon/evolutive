@@ -81,6 +81,8 @@ class BehaviourOnObstacleDistance: public Behaviour {
 
 		}
 
+		BehaviourOnObstacleDistance(Robot* r, map<string, double> param);
+
 		virtual bool checkConditions();
 
 		virtual void print(ostream&) const;

@@ -14,6 +14,12 @@ void Behaviour::saveActionsToFile(ofstream &file) const {
 	}
 }
 
+BehaviourOnObstacleDistance::BehaviourOnObstacleDistance(Robot* r, map<string, double> param): Behaviour(r){
+	angle = (int) param["angle"];
+	distanceMin = param["min"];
+	distanceMax = param["max"];
+}
+
 bool BehaviourOnObstacleDistance::checkConditions() {
 	if (!robot || !(robot->lp)) {
 		cerr << "Robot ou laser não definido" << endl;

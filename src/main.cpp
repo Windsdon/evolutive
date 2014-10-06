@@ -54,51 +54,19 @@ int main(int argc, char **argv) {
 
 	Robot r(&pp, &lp, &descriptor);
 
-	/*ifstream inputFile;
-	 inputFile.open("desc");
-	 descriptor.loadFromFile(inputFile);
-	 inputFile.close();*/
+	stringstream fileName;
+	fileName << "robots/desc" << argv[1];
 
-	srand(time(0));
+	cout << "READING FROM FILE: " << fileName.str() << endl;
 
-	// criar comportamentos
-	int rb = rand() % 5 + 2;
-	for (int i = 0; i < rb; i++) {
-		double minDist = (rand() % 100) / 100.0;
-		Behaviour *b = new BehaviourOnObstacleDistance(&r, rand() % 360,
-				minDist, minDist + (rand() % 400) / 100.0);
-
-		int ra = rand() % 10 + 1;
-		for (int i = 0; i < ra; i++) {
-			Action *act;
-			if (rand() % 2) {
-				act = new Action(ACTION_LINEAR_VEL, (rand() % 100) / 100.0,
-						(rand() % 100) / 100.0);
-			} else {
-				act = new Action(ACTION_ANGULAR_VEL, (rand() % 200) / 100.0 - 1,
-						(rand() % 100) / 100.0);
-			}
-			b->addAction(act);
-		}
-
-		descriptor.addBehavior(b);
-	}
-
-	BehaviourOnObstacleDistance far(&r, 180, 0, 100);
-	far.addAction(new Action(ACTION_LINEAR_VEL, 1, 0.1));
-
-	// senão tem uma grande chance dele ficar parado
-	descriptor.addBehavior(&far);
+	ifstream inputFile;
+	inputFile.open(fileName.str());
+	descriptor.loadFromFile(inputFile, &r);
+	inputFile.close();
 
 	printDescriptor(cout, descriptor);
 
-	stringstream fileName;
-	fileName << "robots/desc" << time(NULL);
-
-	ofstream outputFile;
-	outputFile.open(fileName.str());
-	descriptor.saveToFile(outputFile);
-	outputFile.close();
+	cout << "*** DESCRIPTOR READ. STARTING SIMULATION. ***" << endl;
 
 	auto begin = chrono::high_resolution_clock::now();
 	auto lastSample = chrono::high_resolution_clock::now();
@@ -155,7 +123,7 @@ int main(int argc, char **argv) {
 
 	ofstream stats;
 	stats.open("stats.txt", ios::app);
-	stats << points << " " << (stall ? "true" : "false") << " " << duration
+	stats << argv[1] << " " << points << " " << (stall ? "1" : "0") << " " << duration
 			<< endl;
 	stats.close();
 

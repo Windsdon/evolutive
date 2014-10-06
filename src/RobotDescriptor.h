@@ -16,7 +16,7 @@ class RobotDescriptor {
 
 		RobotDescriptor(ifstream &file);
 
-		void loadFromFile(ifstream &file);
+		void loadFromFile(ifstream &file, Robot* robot);
 
 		/*
 		 * Inicialização vazia

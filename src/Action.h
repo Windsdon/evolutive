@@ -8,6 +8,7 @@
 #pragma once
 
 #include <iostream>
+#include <map>
 using namespace std;
 
 enum ActionTypes {
@@ -25,6 +26,8 @@ class Action {
 				type(type), value(value), duration(duration) {
 
 		}
+
+		Action(map<string, double> params);
 
 		int type;
 		double value;
