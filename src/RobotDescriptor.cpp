@@ -42,7 +42,7 @@ void makeParam(vector<string> chunks, map<string, double> &params) {
 
 		params.insert(pair<string, double>(paramExplode[0], n));
 
-		cout << "Read param " << paramExplode[0] << ", value: " << n << endl;
+		//cout << "Read param " << paramExplode[0] << ", value: " << n << endl;
 	}
 }
 
@@ -90,7 +90,11 @@ void RobotDescriptor::loadFromFile(ifstream &file, Robot* robot) {
 			b->addAction(a);
 		}
 
+		cout << "DONE READING ACTIONS" << endl;
+
 		addBehavior(b);
+
+		cout << "ADDED BEHAVIOUR" << endl;
 	}
 }
 

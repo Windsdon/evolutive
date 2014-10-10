@@ -93,6 +93,5 @@ class BehaviourOnObstacleDistance: public Behaviour {
 
 		virtual void saveToFile(ofstream &file) const;
 
-	private:
 		double angle, distanceMin, distanceMax;
 };
