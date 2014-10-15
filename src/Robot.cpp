@@ -11,7 +11,7 @@ void Robot::update() {
 
 	if(activeAction){
 		if(activeAction->duration < elapsed){
-			cout << "Tempo de ação esgotado!" << endl;
+			//cout << "Tempo de ação esgotado!" << endl;
 			if(activeBehaviour){
 				activeAction = activeBehaviour->getNextAction();
 			} else {
@@ -28,7 +28,7 @@ void Robot::update() {
 	}
 
 	if(!activeAction || !activeBehaviour){
-		cout << "Começando o scan de comportamento" << endl;
+		//cout << "Começando o scan de comportamento" << endl;
 		scanNextBehaviour();
 	}
 
@@ -41,7 +41,7 @@ void Robot::scanNextBehaviour() {
 			activeBehaviour = desc->behaviours[i];
 			activeBehaviour->reset();
 
-			cout << "Ativando comportamento " << activeBehaviour << endl;
+			//cout << "Ativando comportamento " << activeBehaviour << endl;
 			break;
 		}
 	}

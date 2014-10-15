@@ -26,14 +26,14 @@ bool BehaviourOnObstacleDistance::checkConditions() {
 		return false;
 	}
 
-	cout << "Count: " << robot->lp->GetCount() << endl;
+	//cout << "Count: " << robot->lp->GetCount() << endl;
 
 	if (!robot->lp->GetCount()) {
 		return 0;
 	}
 
 	double lr = robot->lp->GetRange(angle);
-	cout << "Distance at " << angle << ": " << lr << endl;
+	//cout << "Distance at " << angle << ": " << lr << endl;
 
 	if (lr <= distanceMax && lr >= distanceMin) {
 		return true;

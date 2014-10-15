@@ -51,50 +51,50 @@ void RobotDescriptor::loadFromFile(ifstream &file, Robot* robot) {
 	getline(file, line);
 	getline(file, line);
 
-	cout << "Read line " << line << endl;
+	//cout << "Read line " << line << endl;
 
 	vector<string> chunks1 = explode(line, ' ');
 	istringstream numberiss(chunks1[1]);
 	int clist;
 	numberiss >> clist;
 
-	cout << "Reading " << clist << " behaviours" << endl;
+	//cout << "Reading " << clist << " behaviours" << endl;
 
 	for (int i = 0; i < clist; i++) {
 		getline(file, line);
-		cout << "Read line " << line << endl;
+		//cout << "Read line " << line << endl;
 		vector<string> chunks2 = explode(line, ' ');
 		map<string, double> params;
 		makeParam(chunks2, params);
 		Behaviour *b = new BehaviourOnObstacleDistance(robot, params);
 
-		cout << "Made behaviour: ";
-		b->print(cout);
+		//cout << "Made behaviour: ";
+		//b->print(cout);
 
 		getline(file, line);
-		cout << "Read line " << line << endl;
+		//cout << "Read line " << line << endl;
 		vector<string> chunks3 = explode(line, ' ');
 		istringstream numberiss2(chunks3[1]);
 		int clist2;
 		numberiss2 >> clist2;
-		cout << "Reading " << clist2 << " actions" << endl;
+		//cout << "Reading " << clist2 << " actions" << endl;
 		for (int j = 0; j < clist2; j++) {
 			getline(file, line);
 			vector<string> chunks4 = explode(line, ' ');
 			map<string, double> params2;
 			makeParam(chunks4, params2);
 			Action *a = new Action(params2);
-			cout << "made action: ";
-			a->print(cout);
-			cout << endl;
+			//cout << "made action: ";
+			//a->print(cout);
+			//cout << endl;
 			b->addAction(a);
 		}
 
-		cout << "DONE READING ACTIONS" << endl;
+		//cout << "DONE READING ACTIONS" << endl;
 
 		addBehavior(b);
 
-		cout << "ADDED BEHAVIOUR" << endl;
+		//cout << "ADDED BEHAVIOUR" << endl;
 	}
 }
 

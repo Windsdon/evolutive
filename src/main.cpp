@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
 	descriptor.loadFromFile(inputFile, &r);
 	inputFile.close();
 
-	printDescriptor(cout, descriptor);
+	//printDescriptor(cout, descriptor);
 
 	cout << "*** DESCRIPTOR READ. STARTING SIMULATION. ***" << endl;
 
