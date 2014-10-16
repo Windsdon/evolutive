@@ -34,6 +34,8 @@ void printDescriptor(ostream& left, const RobotDescriptor &rd) {
 int main(int argc, char **argv) {
 	PlayerClient *robot = nullptr;
 
+	int at = 0;
+
 	while (robot == nullptr) {
 		try {
 			robot = new PlayerClient("localhost", 6665);
@@ -41,6 +43,12 @@ int main(int argc, char **argv) {
 			robot = nullptr;
 			sleep(1);
 		}
+
+		if(at >= 20){
+			return 0;
+		}
+
+		at++;
 	}
 
 	Position2dProxy pp(robot);
