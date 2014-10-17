@@ -69,12 +69,10 @@ int tournament(vector<guy> &pop, int start, int end, int n,
 	}
 
 	chosen.push_back(q.top().id);
-	cout << "Winner: " << q.top().id << ", score " << q.top().score << endl;
 	q.pop();
 
 	while (!q.empty()) {
 		killed.push_back(q.top().id);
-		cout << "Lost: " << q.top().id << ", score " << q.top().score << endl;
 		q.pop();
 	}
 
@@ -104,6 +102,7 @@ int main(int argc, char **argv) {
 	simdata.close();
 
 	vector<guy> pop;
+	map<string, guy> popmap;
 
 	ifstream read;
 	read.open("stats.txt");
@@ -130,6 +129,8 @@ int main(int argc, char **argv) {
 
 		pop.push_back(g);
 
+		popmap.insert(pair<string, guy>(g.id, g));
+
 		RobotDescriptor *descriptor = new RobotDescriptor();
 
 		stringstream fileName;
@@ -149,16 +150,15 @@ int main(int argc, char **argv) {
 	ofstream popOut;
 	popOut.open(popOutName.str());
 
-	for (int i = 0; i < pop.size(); i++) {
-		popOut << pop[i].score << '\n';
-	}
-
 	int last = 0;
 	for (int i = 0; i < 400; i += 10) {
 		int c = 0;
 
+		bool broken = false;
 		for (int j = last; j < pop.size(); j++) {
 			if (pop[j].score > i) {
+				last++;
+				broken = true;
 				break;
 			}
 
@@ -166,54 +166,190 @@ int main(int argc, char **argv) {
 			c++;
 		}
 
+		broken = true;
+
 		popOut << i << '\t' << c << '\n';
+	}
+
+//	for (int toursize = 2; toursize <= 64; toursize *= 2) {
+//		vector<guy> newpop;
+//		map<string, guy> mapunique;
+//
+//		cout << "Torneio de " << toursize << endl;
+//
+//		while (newpop.size() != indCount) {
+//			vector<string> killed;
+//			vector<string> chosen;
+//			tournament(pop, 0, pop.size() - 1, toursize, chosen, killed);
+//
+//			newpop.push_back(popmap[chosen[0]]);
+//			mapunique.insert(pair<string, guy>(chosen[0], popmap[chosen[0]]));
+//		}
+//
+//		vector<guy> popunique;
+//
+//		for (map<string, guy>::iterator it = mapunique.begin();
+//				it != mapunique.end(); ++it) {
+//			popunique.push_back(it->second);
+//		}
+//
+//		cout << "Total selecionado: " << newpop.size() << ", unicos: "
+//				<< popunique.size() << endl;
+//
+//		sort(newpop.begin(), newpop.end());
+//		sort(popunique.begin(), popunique.end());
+//
+//		stringstream k;
+//		k << "tournament." << toursize << ".txt";
+//
+//		ofstream popOut(k.str());
+//
+//		popOut << "All:\n";
+//
+//		int total = 0;
+//
+//		int last = 0;
+//		for (int i = 0; i <= 400; i += 10) {
+//			int c = 0;
+//
+//			bool broken = false;
+//			for (int j = last; j < newpop.size(); j++) {
+//
+//				if (newpop[j].score > i) {
+//					last++;
+//					broken = true;
+//					break;
+//				}
+//
+//				last = j;
+//				c++;
+//			}
+//
+//			if (!broken) {
+//				last++;
+//			}
+//
+//			total += c;
+//
+//			popOut << i << '\t' << c << '\n';
+//		}
+//
+//		cout << "Output: " << total << endl;
+//
+//		popOut << "Unique:\n";
+//
+//		last = 0;
+//		for (int i = 0; i < 400; i += 10) {
+//			int c = 0;
+//
+//			bool broken = false;
+//			for (int j = last; j < popunique.size(); j++) {
+//				if (popunique[j].score > i) {
+//					last++;
+//					break;
+//				}
+//
+//				last = j;
+//				c++;
+//			}
+//			if (!broken) {
+//				last++;
+//			}
+//
+//			popOut << i << '\t' << c << '\n';
+//		}
+//
+//		popOut.close();
+//
+//	}
+//
+//	return 0;
+
+	map<string, RobotDescriptor*> newPop;
+
+	vector<guy> newpop;
+	map<string, guy> mapunique;
+	while (newpop.size() != indCount) {
+		vector<string> killed;
+		vector<string> chosen;
+		tournament(pop, 0, pop.size() - 1, 4, chosen, killed);
+
+		newpop.push_back(popmap[chosen[0]]);
+		mapunique.insert(pair<string, guy>(chosen[0], popmap[chosen[0]]));
+	}
+
+	vector<guy> popunique;
+
+	for (map<string, guy>::iterator it = mapunique.begin();
+			it != mapunique.end(); ++it) {
+		popunique.push_back(it->second);
+	}
+
+	sort(newpop.begin(), newpop.end());
+	sort(popunique.begin(), popunique.end());
+
+	popOut << "All:\n";
+
+	last = 0;
+	for (int i = 0; i < 400; i += 10) {
+		int c = 0;
+
+		bool broken = false;
+		for (int j = last; j < newpop.size(); j++) {
+			if (newpop[j].score > i) {
+				last++;
+				broken = true;
+				break;
+			}
+
+			last = j;
+			c++;
+		}
+
+		if (!broken) {
+			last++;
+		}
+
+		popOut << i << '\t' << c << '\n';
+	}
+
+	popOut << "Unique:\n";
+
+	last = 0;
+	for (int i = 0; i < 400; i += 10) {
+		int c = 0;
+
+		bool broken = false;
+		for (int j = last; j < popunique.size(); j++) {
+			if (popunique[j].score > i) {
+				last++;
+				broken = true;
+				break;
+			}
+
+			last = j;
+			c++;
+		}
+
+		if (!broken) {
+			last++;
+		}
+
+		popOut << i << '\t' << c << '\n';
+	}
+
+	popOut << newpop.size() << " chosen, " << popunique.size() << " unique\n";
+
+	for (int i = 0; i < pop.size(); i++) {
+		popOut << pop[i].score << '\n';
 	}
 
 	popOut.close();
 
-	map<string, RobotDescriptor*> newPop;
-
-	int numDIV = 20;
-	double divAmmount = pop.size() / ((double) numDIV);
-
-	vector<string> killed;
-	vector<string> chosen;
-	for (int i = 0; i < numDIV; i++) {
-		int start = divAmmount * i;
-		int end = start + divAmmount - 1;
-
-		start = std::min(start, (int) pop.size() - 1);
-		end = std::min(end, (int) pop.size() - 1);
-
-		cout << "Tournament from " << start << " to " << end << endl;
-
-		tournament(pop, start, end, 4, chosen, killed);
-	}
-
-	cout << killed.size() << " killed, " << chosen.size() << " chosen" << endl;
-
-	for (int j = 0; j < chosen.size(); j++) {
-		string id = chosen[j];
-
-		for (vector<guy>::iterator it = pop.begin(); it != pop.end(); ++it) {
-			if (it->id == id) {
-				cout << "choosing " << id << ", score: " << it->score << endl;
-				newPop.insert(pair<string, RobotDescriptor*>(id, descs[id]));
-				pop.erase(it);
-				break;
-			}
-		}
-	}
-
-	for (int j = 0; j < killed.size(); j++) {
-		string id = killed[j];
-
-		for (vector<guy>::iterator it = pop.begin(); it != pop.end(); ++it) {
-			if (it->id == id) {
-				pop.erase(it);
-				break;
-			}
-		}
+	for (int j = 0; j < popunique.size(); j++) {
+		string id = popunique[j].id;
+		cout << "choosing " << id << ", score: " << popunique[j].score << endl;
+		newPop.insert(pair<string, RobotDescriptor*>(id, descs[id]));
 	}
 
 	cout << endl;
@@ -223,7 +359,7 @@ int main(int argc, char **argv) {
 
 	int k = 0;
 	while (newPop.size() < indCount) {
-		string parentID = chosen[rand() % (chosen.size())];
+		string parentID = popunique[rand() % (popunique.size())].id;
 		RobotDescriptor *parent = descs[parentID];
 		RobotDescriptor *ind = new RobotDescriptor();
 
@@ -237,23 +373,38 @@ int main(int argc, char **argv) {
 		for (int i = 0; i < ind->behaviours.size(); i++) {
 			BehaviourOnObstacleDistance *b =
 					static_cast<BehaviourOnObstacleDistance*>(ind->behaviours[i]);
-			b->angle += rand()%5 - 2;
-			b->angle = std::min(std::max(b->angle, 360.0), 0.0);
-			b->distanceMax += (rand()%20)/100.0 - 0.1;
-			b->distanceMin += (rand()%20)/100.0 - 0.1;
+			if (rand() % 100 <= 5) {
+				b->angle += rand() % 5 - 2;
+			}
+			if (rand() % 100 <= 5) {
+				b->angle = std::min(std::max(b->angle, 360.0), 0.0);
+			}
+			if (rand() % 100 <= 5) {
+				b->distanceMax += (rand() % 20) / 100.0 - 0.1;
+			}
+			if (rand() % 100 <= 5) {
+				b->distanceMin += (rand() % 20) / 100.0 - 0.1;
+			}
 
-			for(int j = 0; j < b->actions.size(); j++){
+			for (int j = 0; j < b->actions.size(); j++) {
 				Action *a = b->actions[j];
 
-				a->duration += (rand()%20)/100.0 - 0.1;
-				a->duration = std::max(0.0, a->duration);
+				if (rand() % 100 <= 5) {
+					a->duration += (rand() % 20) / 100.0 - 0.1;
+				}
+				if (rand() % 100 <= 5) {
+					a->duration = std::max(0.0, a->duration);
+				}
 
-				a->value += (rand()%20)/100.0 - 0.1;
+				if (rand() % 100 <= 5) {
+					a->value += (rand() % 20) / 100.0 - 0.1;
+				}
 			}
 		}
 
 		stringstream generatedID;
-		generatedID << setw(5) << setfill('0') << popNum << '.' << setw(5) << setfill('0') << k;
+		generatedID << setw(5) << setfill('0') << popNum << '.' << setw(5)
+				<< setfill('0') << k;
 
 		cout << "New ID: " << generatedID.str() << endl;
 
@@ -273,7 +424,8 @@ int main(int argc, char **argv) {
 
 	}
 
-	for(map<string, RobotDescriptor*>::iterator it = newPop.begin(); it != newPop.end(); ++it){
+	for (map<string, RobotDescriptor*>::iterator it = newPop.begin();
+			it != newPop.end(); ++it) {
 		output << it->first << '\n';
 	}
 
