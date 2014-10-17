@@ -79,6 +79,39 @@ int tournament(vector<guy> &pop, int start, int end, int n,
 	return r;
 }
 
+/*
+ * Funcionamento:
+ * organiza data nas ranges divs[i] <= k < divs[i+1]
+ */
+vector<int> generateHistogram(const vector<double> &divs,
+		const vector<double> &data) {
+	vector<int> r(divs.size(), 0);
+
+	for (int i = 0; i < data.size(); i++) {
+		int minr;
+		for (minr = 0; minr < divs.size(); minr++) {
+			if (data[i] < divs[minr]) {
+				break;
+			}
+		}
+		if (minr) {
+			minr--;
+			r[minr]++;
+		}
+	}
+
+	return r;
+}
+
+double average(const vector<double> &v) {
+	double sum = 0;
+	for (int i = 0; i < v.size(); i++) {
+		sum += v[i];
+	}
+
+	return sum / (v.size());
+}
+
 int main(int argc, char **argv) {
 	srand(time(0));
 
@@ -150,121 +183,6 @@ int main(int argc, char **argv) {
 	ofstream popOut;
 	popOut.open(popOutName.str());
 
-	int last = 0;
-	for (int i = 0; i < 400; i += 10) {
-		int c = 0;
-
-		bool broken = false;
-		for (int j = last; j < pop.size(); j++) {
-			if (pop[j].score > i) {
-				last++;
-				broken = true;
-				break;
-			}
-
-			last = j;
-			c++;
-		}
-
-		broken = true;
-
-		popOut << i << '\t' << c << '\n';
-	}
-
-//	for (int toursize = 2; toursize <= 64; toursize *= 2) {
-//		vector<guy> newpop;
-//		map<string, guy> mapunique;
-//
-//		cout << "Torneio de " << toursize << endl;
-//
-//		while (newpop.size() != indCount) {
-//			vector<string> killed;
-//			vector<string> chosen;
-//			tournament(pop, 0, pop.size() - 1, toursize, chosen, killed);
-//
-//			newpop.push_back(popmap[chosen[0]]);
-//			mapunique.insert(pair<string, guy>(chosen[0], popmap[chosen[0]]));
-//		}
-//
-//		vector<guy> popunique;
-//
-//		for (map<string, guy>::iterator it = mapunique.begin();
-//				it != mapunique.end(); ++it) {
-//			popunique.push_back(it->second);
-//		}
-//
-//		cout << "Total selecionado: " << newpop.size() << ", unicos: "
-//				<< popunique.size() << endl;
-//
-//		sort(newpop.begin(), newpop.end());
-//		sort(popunique.begin(), popunique.end());
-//
-//		stringstream k;
-//		k << "tournament." << toursize << ".txt";
-//
-//		ofstream popOut(k.str());
-//
-//		popOut << "All:\n";
-//
-//		int total = 0;
-//
-//		int last = 0;
-//		for (int i = 0; i <= 400; i += 10) {
-//			int c = 0;
-//
-//			bool broken = false;
-//			for (int j = last; j < newpop.size(); j++) {
-//
-//				if (newpop[j].score > i) {
-//					last++;
-//					broken = true;
-//					break;
-//				}
-//
-//				last = j;
-//				c++;
-//			}
-//
-//			if (!broken) {
-//				last++;
-//			}
-//
-//			total += c;
-//
-//			popOut << i << '\t' << c << '\n';
-//		}
-//
-//		cout << "Output: " << total << endl;
-//
-//		popOut << "Unique:\n";
-//
-//		last = 0;
-//		for (int i = 0; i < 400; i += 10) {
-//			int c = 0;
-//
-//			bool broken = false;
-//			for (int j = last; j < popunique.size(); j++) {
-//				if (popunique[j].score > i) {
-//					last++;
-//					break;
-//				}
-//
-//				last = j;
-//				c++;
-//			}
-//			if (!broken) {
-//				last++;
-//			}
-//
-//			popOut << i << '\t' << c << '\n';
-//		}
-//
-//		popOut.close();
-//
-//	}
-//
-//	return 0;
-
 	map<string, RobotDescriptor*> newPop;
 
 	vector<guy> newpop;
@@ -288,57 +206,38 @@ int main(int argc, char **argv) {
 	sort(newpop.begin(), newpop.end());
 	sort(popunique.begin(), popunique.end());
 
-	popOut << "All:\n";
+	vector<double> divs;
+	vector<double> oldPopScores;
+	vector<double> newPopScores;
+	vector<double> newPopScoresUnique;
 
-	last = 0;
 	for (int i = 0; i < 400; i += 10) {
-		int c = 0;
-
-		bool broken = false;
-		for (int j = last; j < newpop.size(); j++) {
-			if (newpop[j].score > i) {
-				last++;
-				broken = true;
-				break;
-			}
-
-			last = j;
-			c++;
-		}
-
-		if (!broken) {
-			last++;
-		}
-
-		popOut << i << '\t' << c << '\n';
+		divs.push_back(i);
 	}
 
-	popOut << "Unique:\n";
-
-	last = 0;
-	for (int i = 0; i < 400; i += 10) {
-		int c = 0;
-
-		bool broken = false;
-		for (int j = last; j < popunique.size(); j++) {
-			if (popunique[j].score > i) {
-				last++;
-				broken = true;
-				break;
-			}
-
-			last = j;
-			c++;
-		}
-
-		if (!broken) {
-			last++;
-		}
-
-		popOut << i << '\t' << c << '\n';
+	for (int i = 0; i < pop.size(); i++) {
+		oldPopScores.push_back(pop[i].score);
 	}
+
+	for (int i = 0; i < newpop.size(); i++) {
+		newPopScores.push_back(newpop[i].score);
+	}
+
+	for (int i = 0; i < popunique.size(); i++) {
+		newPopScoresUnique.push_back(popunique[i].score);
+	}
+
+	vector<int> oldPopStats = generateHistogram(divs, oldPopScores);
+	vector<int> newPopStats = generateHistogram(divs, newPopScores);
+	vector<int> newPopStatsUnique = generateHistogram(divs, newPopScoresUnique);
 
 	popOut << newpop.size() << " chosen, " << popunique.size() << " unique\n";
+	popOut << "range\told\tnew\tunique\n";
+
+	for (int i = 0; i < divs.size(); i++) {
+		popOut << divs[i] << '\t' << oldPopStats[i] << '\t' << newPopStats[i]
+				<< '\t' << newPopStatsUnique[i] << '\n';
+	}
 
 	for (int i = 0; i < pop.size(); i++) {
 		popOut << pop[i].score << '\n';
@@ -354,8 +253,40 @@ int main(int argc, char **argv) {
 
 	cout << endl;
 
+	if (argc > 1) {
+		return 0;
+	}
+
 	ofstream output;
 	output.open("generated.txt");
+
+	for (int i = 0; i < 0.7 * (indCount - newPop.size()); i++) {
+		string parent1 = popunique[rand() % (popunique.size())].id;
+		string parent2 = popunique[rand() % (popunique.size())].id;
+		RobotDescriptor *p1 = descs[parent1];
+		RobotDescriptor *p2 = descs[parent2];
+
+		double point = (rand() % 10) / 10.0;
+
+		if (p1->behaviours.size() < 3 || p2->behaviours.size() < 3) {
+			continue;
+		}
+
+		RobotDescriptor *ind = new RobotDescriptor();
+
+		int cut1 = std::min(std::max(1, (int) (point * p1->behaviours.size())),
+				(int) p1->behaviours.size() - 2);
+		int cut2 = std::min(std::max(1, (int) (point * p2->behaviours.size())),
+				(int) p2->behaviours.size() - 2);
+
+		//@bug Referência ao descritor pai é mantida!
+		for(int i = 0; i < cut1; i++){
+			ind->addBehavior(p1->behaviours[i]);
+		}
+		for(int i = cut2; i < p2->behaviours.size(); i++){
+			ind->addBehavior(p2->behaviours[i]);
+		}
+	}
 
 	int k = 0;
 	while (newPop.size() < indCount) {
