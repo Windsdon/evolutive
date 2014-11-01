@@ -261,8 +261,10 @@ int main(int argc, char **argv) {
 
 	ofstream output;
 	output.open("generated.txt");
+	
+	int ammountCross = 0.7 * (indCount - newPop.size());
 
-	for (int i = 0; i < 0.7 * (indCount - newPop.size()); i++) {
+	for (int i = 0; i < ammountCross; i++) {
 		string parent1 = popunique[rand() % (popunique.size())].id;
 		string parent2 = popunique[rand() % (popunique.size())].id;
 		RobotDescriptor *p1 = descs[parent1];
@@ -290,6 +292,7 @@ int main(int argc, char **argv) {
 		}
 	}
 
+	//Mutação!
 	int k = 0;
 	while (newPop.size() < indCount) {
 		string parentID = popunique[rand() % (popunique.size())].id;
