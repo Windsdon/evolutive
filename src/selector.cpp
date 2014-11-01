@@ -16,6 +16,8 @@
 #include <iomanip>
 #include <queue>
 
+#define SIZE 4
+
 void printBehaviour(ostream& left, const Behaviour& b) {
 	left << "Behaviour " << &b << " ";
 	b.print(left);
@@ -190,7 +192,7 @@ int main(int argc, char **argv) {
 	while (newpop.size() != indCount) {
 		vector<string> killed;
 		vector<string> chosen;
-		tournament(pop, 0, pop.size() - 1, 4, chosen, killed);
+		tournament(pop, 0, pop.size() - 1, SIZE, chosen, killed);
 
 		newpop.push_back(popmap[chosen[0]]);
 		mapunique.insert(pair<string, guy>(chosen[0], popmap[chosen[0]]));

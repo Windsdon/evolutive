@@ -1,0 +1,6 @@
+rodar start.sh
+rodar all.sh até ter umas 10 populações
+
+mudar no selector.cpp START para 2
+rodar make selector
+repetir
