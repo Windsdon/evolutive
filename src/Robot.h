@@ -17,7 +17,7 @@ class Robot {
 	public:
 		Robot(Position2dProxy* pp, LaserProxy* lp, RobotDescriptor* desc) :
 				pp(pp), lp(lp), desc(desc), activeBehaviour(nullptr), activeAction(
-						nullptr), actionPerformed(false) {
+						nullptr), actionPerformed(false), oldAng(0), oldLinear(0) {
 			lastBehaviourUpdate = chrono::high_resolution_clock::now();
 		}
 
@@ -34,6 +34,9 @@ class Robot {
 		RobotDescriptor *desc;
 		Behaviour *activeBehaviour;
 		Action *activeAction;
+
+		double oldAng;
+		double oldLinear;
 
 		chrono::high_resolution_clock::time_point lastBehaviourUpdate;
 

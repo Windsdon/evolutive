@@ -53,10 +53,12 @@ void Robot::runAction() {
 
 		switch (activeAction->type) {
 			case ACTION_LINEAR_VEL:
-				pp->SetSpeed(activeAction->value, 0);
+				pp->SetSpeed(activeAction->value, oldAng);
+				oldLinear = activeAction->value;
 				break;
 			case ACTION_ANGULAR_VEL:
-				pp->SetSpeed(0, activeAction->value);
+				pp->SetSpeed(oldLinear, activeAction->value);
+				oldAng = activeAction->value;
 				break;
 			default:
 				break;
