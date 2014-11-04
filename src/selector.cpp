@@ -16,7 +16,11 @@
 #include <iomanip>
 #include <queue>
 
+// Tamanho do torneio
 #define SIZE 4
+// Porcentagem da população gerada por cross over
+// Para fazer uma população só com mutação, coloque em 0
+#define TAXA_CROSS 0.7
 
 void printBehaviour(ostream& left, const Behaviour& b) {
 	left << "Behaviour " << &b << " ";
@@ -262,7 +266,7 @@ int main(int argc, char **argv) {
 	ofstream output;
 	output.open("generated.txt");
 	
-	int ammountCross = 0.7 * (indCount - newPop.size());
+	int ammountCross = TAXA_CROSS * (indCount - newPop.size());
 
 	for (int i = 0; i < ammountCross; i++) {
 		string parent1 = popunique[rand() % (popunique.size())].id;
