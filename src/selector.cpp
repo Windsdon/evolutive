@@ -17,7 +17,7 @@
 #include <queue>
 
 // Tamanho do torneio
-#define SIZE 4
+#define SIZE 2
 // Porcentagem da população gerada por cross over
 // Para fazer uma população só com mutação, coloque em 0
 #define TAXA_CROSS 0.7
