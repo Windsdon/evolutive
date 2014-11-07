@@ -22,6 +22,8 @@
 // Para fazer uma população só com mutação, coloque em 0
 #define TAXA_CROSS 0.7
 
+#define SURVIVAL_RATE 0.1
+
 void printBehaviour(ostream& left, const Behaviour& b) {
 	left << "Behaviour " << &b << " ";
 	b.print(left);
@@ -251,7 +253,7 @@ int main(int argc, char **argv) {
 
 	popOut.close();
 
-	for (int j = 0; j < popunique.size(); j++) {
+	for (int j = 0; j < SURVIVAL_RATE * popunique.size(); j++) {
 		string id = popunique[j].id;
 		cout << "choosing " << id << ", score: " << popunique[j].score << endl;
 		newPop.insert(pair<string, RobotDescriptor*>(id, descs[id]));
@@ -288,10 +290,10 @@ int main(int argc, char **argv) {
 				(int) p2->behaviours.size() - 2);
 
 		//@bug Referência ao descritor pai é mantida!
-		for(int i = 0; i < cut1; i++){
+		for (int i = 0; i < cut1; i++) {
 			ind->addBehavior(p1->behaviours[i]);
 		}
-		for(int i = cut2; i < p2->behaviours.size(); i++){
+		for (int i = cut2; i < p2->behaviours.size(); i++) {
 			ind->addBehavior(p2->behaviours[i]);
 		}
 	}
@@ -340,6 +342,36 @@ int main(int argc, char **argv) {
 					a->value += (rand() % 20) / 100.0 - 0.1;
 				}
 			}
+
+			if (!(rand() % 100)) {
+				Action *a;
+				if (rand() % 2) {
+					a = new Action(ACTION_LINEAR_VEL, (rand() % 100) / 100.0,
+							(rand() % 100) / 100.0);
+				} else {
+					a = new Action(ACTION_ANGULAR_VEL,
+							(rand() % 200) / 100.0 - 1, (rand() % 100) / 100.0);
+				}
+
+				b->addAction(a);
+			}
+		}
+
+		if (!(rand() % 100)) {
+			double minDist = (rand() % 100) / 100.0;
+			Behaviour *b = new BehaviourOnObstacleDistance(nullptr,
+					rand() % 360, minDist, minDist + (rand() % 400) / 100.0);
+
+			Action *act;
+			if (rand() % 2) {
+				act = new Action(ACTION_LINEAR_VEL, (rand() % 100) / 100.0,
+						(rand() % 100) / 100.0);
+			} else {
+				act = new Action(ACTION_ANGULAR_VEL, (rand() % 200) / 100.0 - 1,
+						(rand() % 100) / 100.0);
+			}
+
+			b->addAction(act);
 		}
 
 		stringstream generatedID;
