@@ -20,9 +20,9 @@
 #define SIZE 2
 // Porcentagem da população gerada por cross over
 // Para fazer uma população só com mutação, coloque em 0
-#define TAXA_CROSS 0.7
+#define TAXA_CROSS 0.8
 
-#define SURVIVAL_RATE 0.1
+#define SURVIVAL_RATE 0.7
 
 void printBehaviour(ostream& left, const Behaviour& b) {
 	left << "Behaviour " << &b << " ";
@@ -248,16 +248,17 @@ int main(int argc, char **argv) {
 	}
 
 	for (int i = 0; i < pop.size(); i++) {
-		popOut << pop[i].score << '\n';
+		popOut << pop[i].score << "\t" << pop[i].id << '\n';
 	}
-
-	popOut.close();
 
 	for (int j = 0; j < SURVIVAL_RATE * popunique.size(); j++) {
 		string id = popunique[j].id;
+		popOut << id << " survived\n";
 		cout << "choosing " << id << ", score: " << popunique[j].score << endl;
 		newPop.insert(pair<string, RobotDescriptor*>(id, descs[id]));
 	}
+
+	popOut.close();
 
 	cout << endl;
 
@@ -316,9 +317,7 @@ int main(int argc, char **argv) {
 			BehaviourOnObstacleDistance *b =
 					static_cast<BehaviourOnObstacleDistance*>(ind->behaviours[i]);
 			if (rand() % 100 <= 5) {
-				b->angle += rand() % 5 - 2;
-			}
-			if (rand() % 100 <= 5) {
+				b->angle += rand()%5 - 2;
 				b->angle = std::max(std::min(b->angle, 360.0), 0.0);
 			}
 			if (rand() % 100 <= 5) {
