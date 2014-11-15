@@ -36,9 +36,13 @@ int main(int argc, char **argv) {
 
 	int at = 0;
 
+	stringstream portConverter(argv[2]);
+	int simPort;
+	portConverter >> simPort;
+
 	while (robot == nullptr) {
 		try {
-			robot = new PlayerClient("localhost", 6665);
+			robot = new PlayerClient("localhost", simPort);
 		} catch (PlayerError &ex) {
 			robot = nullptr;
 			sleep(1);
@@ -54,9 +58,16 @@ int main(int argc, char **argv) {
 	Position2dProxy pp(robot);
 	LaserProxy lp(robot);
 
-	double rtx = 6;
-	double rty = 6;
+	ifstream targetData("target.txt");
+
+	double rtx = 0;
+	double rty = 0;
 	double timeLimit = 60;
+	
+	targetData >> rtx >> rty;
+	targetData.close();
+
+	cout << "Target: " << rtx << ", " << rty << endl;
 
 	RobotDescriptor descriptor;
 
@@ -64,6 +75,56 @@ int main(int argc, char **argv) {
 
 	stringstream fileName;
 	fileName << "robots/desc" << argv[1];
+
+	ifstream read;
+	read.open("stats.txt");
+
+	stringstream fileLockName;
+	fileLockName << "lock." << argv[1];
+
+
+	ifstream fileLockCheck(fileLockName.str());
+
+	if(fileLockCheck.good()){
+		fileLockCheck.close();
+		return 0;
+	}
+
+	fileLockCheck.close();
+
+	bool simulated = false;
+
+	do {
+		string id;
+		double score;
+		int stall;
+		double duration;
+
+		read >> id >> score >> stall >> duration;
+
+		if (!id.length()) {
+			break;
+		}
+
+		stringstream fileName2;
+		fileName2 << "robots/desc" << id;
+
+		if (fileName == fileName2) {
+			simulated = true;
+			break;
+		}
+
+	} while (!read.eof());
+
+	if(simulated){
+		return 0;
+	}
+
+	cout << "Creating LOCK" << endl;
+	
+	ofstream fileLock(fileLockName.str());
+	fileLock << endl;
+	fileLock.close();
 
 	cout << "READING FROM FILE: " << fileName.str() << endl;
 
@@ -134,6 +195,8 @@ int main(int argc, char **argv) {
 	stats << argv[1] << " " << points << " " << (stall ? "1" : "0") << " " << duration
 			<< endl;
 	stats.close();
+
+	remove(fileLockName.str().c_str());
 
 	return 0;
 }

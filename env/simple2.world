@@ -30,7 +30,7 @@ floorplan
   name "cave"
   size [16.000 16.000 0.800]
   pose [0 0 0 0]
-  bitmap "bitmaps/rooms.png"
+  bitmap "bitmaps/middle.png"
 )
 
 
@@ -38,7 +38,7 @@ pioneer2dx
 (		  
   # can refer to the robot by this name
   name "r0"
-  pose [ -6 -6 0 0 ] 
+  pose [ -5 -5 0 45 ] 
 
   sicklaser(   
      # ctrl "lasernoise"  # uncomment this line to run a laser noise generator

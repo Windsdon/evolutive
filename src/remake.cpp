@@ -57,10 +57,23 @@ int main(int argc, char **argv) {
 
 	in.close();
 
-	if(argc == 1){
-		for(int i = 0; i < regenerate.size(); i++){
-			cout << regenerate[i] << endl;
+	stringstream ss;
+	if(argc == 2){
+		ss << argv[1];
+	}
+
+	if(argc == 1 || (argc == 2 && ss.str() == "reverse")){
+		if(argc == 2 && ss.str() == "reverse") {
+			for(int i = (regenerate.size() - 1); i >= 0 ; i--){
+				cout << regenerate[i] << endl;
+			}
+		}else{	
+			for(int i = 0; i < regenerate.size(); i++){
+				cout << regenerate[i] << endl;
+			}
+
 		}
+		
 	}
 
 	if(regenerate.size()){
