@@ -16,6 +16,12 @@ void Behaviour::saveActionsToFile(ofstream &file) const {
 
 BehaviourOnObstacleDistance::BehaviourOnObstacleDistance(Robot* r, map<string, double> param): Behaviour(r){
 	angle = (int) param["angle"];
+	if(angle < 0){
+		angle = 0;
+	}
+	if(angle >= 360) {
+		angle = 359;
+	}
 	distanceMin = param["min"];
 	distanceMax = param["max"];
 }

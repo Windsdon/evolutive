@@ -318,7 +318,7 @@ int main(int argc, char **argv) {
 					static_cast<BehaviourOnObstacleDistance*>(ind->behaviours[i]);
 			if (rand() % 100 <= 5) {
 				b->angle += rand()%5 - 2;
-				b->angle = std::max(std::min(b->angle, 360.0), 0.0);
+				b->angle = std::min(std::max(b->angle, 360.0), 0.0);
 			}
 			if (rand() % 100 <= 5) {
 				b->distanceMax += (rand() % 20) / 100.0 - 0.1;
