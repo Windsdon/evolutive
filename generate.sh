@@ -1,1 +1,1 @@
-src/generator.out 100
+src/generator.out 1000
